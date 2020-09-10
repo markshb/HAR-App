@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="downstairs_prob" type="id"></item>
+    <item name="jogging_prob" type="id"></item>
+    <item name="sitting_prob" type="id"></item>
+    <item name="standing_prob" type="id"></item>
+    <item name="upstairs_prob" type="id"></item>
+    <item name="walking_prob" type="id"></item>
+    <item name="downstairs_row" type="id"></item>
+    <item name="jogging_row" type="id"></item>
+    <item name="sitting_row" type="id"></item>
+    <item name="standing_row" type="id"></item>
+    <item name="upstairs_row" type="id"></item>
+    <item name="walking_row" type="id"></item>
+    <item name="current_activity" type="id"></item>
+</resources>
