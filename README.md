@@ -1,2 +1,2 @@
 # HAR-App
-HumanActivity Recognition using mobile sensors
+Human Activity Recognition using mobile sensors
