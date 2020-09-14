@@ -159,6 +159,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 if(max > 0.50 && idx != prevIdx) {
                     textToSpeech.speak(labels[idx], TextToSpeech.QUEUE_ADD, null,
                             Integer.toString(new Random().nextInt()));
+                    setCurrentActivity(idx);
                     prevIdx = idx;
                 }
             }
@@ -245,7 +246,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             Log.i("Probabilities: ", Arrays.toString(results));
             setProbabilities();
-            setCurrentActivity(idx);
+
+            if(max > 0.50 && idx != prevIdx) {
+                setCurrentActivity(idx);
+            }
 
             data.clear();
             ax.clear(); ay.clear(); az.clear();
