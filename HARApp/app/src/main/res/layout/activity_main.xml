@@ -196,7 +196,7 @@
                 android:layout_marginLeft="-20dp"/>
 
             <TextView
-                android:id="@+id/biking_prob"
+                android:id="@+id/biking_prob" 
                 android:layout_gravity="center"
                 android:textAlignment="center"
                 android:textSize="18sp" />
