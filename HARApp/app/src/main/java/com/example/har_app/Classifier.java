@@ -20,7 +20,7 @@ public class Classifier {
     // Size of the input data
     private static final long[] INPUT_SIZE = {1, 100, 12};
     // Six classes to classify
-    private static final int OUTPUT_SIZE = 6;
+    private static final int OUTPUT_SIZE = 7;
 
     public Classifier(final Context context) {
         inferenceInterface = new TensorFlowInferenceInterface(context.getAssets(), MODEL_FILE);

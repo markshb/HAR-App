@@ -146,25 +146,46 @@
         </TableRow>
 
         <TableRow
-            android:id="@+id/walking_row"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="20dp">
+        android:id="@+id/walking_row"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp">
 
-            <TextView
-                android:id="@+id/walking_title"
-                android:layout_weight="1"
-                android:text="@string/walking"
-                android:textAlignment="center"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+        <TextView
+            android:id="@+id/walking_title"
+            android:layout_weight="1"
+            android:text="@string/walking"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/walking_prob"
-                android:layout_weight="1"
-                android:textAlignment="center"
-                android:textSize="18sp" />
-        </TableRow>
+        <TextView
+            android:id="@+id/walking_prob"
+            android:layout_weight="1"
+            android:textAlignment="center"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/biking_row"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/biking_title"
+            android:layout_weight="1"
+            android:text="@string/biking"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/biking_prob"
+            android:layout_weight="1"
+            android:textAlignment="center"
+            android:textSize="18sp" />
+    </TableRow>
 
         <Button
             android:id="@+id/current_activity"

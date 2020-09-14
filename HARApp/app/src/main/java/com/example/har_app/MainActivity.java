@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextView standingTextView;
     private TextView upstairsTextView;
     private TextView walkingTextView;
+    private TextView bikingTextView;
     private TextView currentActivityTextView;
 
     private TableRow downstairsTableRow;
@@ -63,12 +64,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TableRow standingTableRow;
     private TableRow upstairsTableRow;
     private TableRow walkingTableRow;
+    private TableRow bikingTableRow;
 
     private TextToSpeech textToSpeech;
     private float[] results;
     private Classifier classifier;
 
-    private String[] labels = {"Downstairs", "Jogging", "Sitting", "Standing", "Upstairs", "Walking"};
+    private String[] labels = {"Biking","Downstairs", "Jogging", "Sitting", "Standing", "Upstairs", "Walking"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         standingTextView = findViewById(R.id.standing_prob);
         upstairsTextView = findViewById(R.id.upstairs_prob);
         walkingTextView = findViewById(R.id.walking_prob);
+        bikingTextView = findViewById((R.id.biking_prob));
         currentActivityTextView = findViewById(R.id.current_activity);
 
         downstairsTableRow = findViewById(R.id.downstairs_row);
@@ -94,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         standingTableRow = findViewById(R.id.standing_row);
         upstairsTableRow = findViewById(R.id.upstairs_row);
         walkingTableRow = findViewById(R.id.walking_row);
-
+        bikingTableRow = findViewById(R.id.biking_row);
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
@@ -251,27 +254,30 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     // Writes measured probabilities in app textView
     private void setProbabilities() {
-        downstairsTextView.setText(Float.toString(round(results[0], 2)));
-        joggingTextView.setText(Float.toString(round(results[1], 2)));
-        sittingTextView.setText(Float.toString(round(results[2], 2)));
-        standingTextView.setText(Float.toString(round(results[3], 2)));
-        upstairsTextView.setText(Float.toString(round(results[4], 2)));
-        walkingTextView.setText(Float.toString(round(results[5], 2)));
+        bikingTextView.setText(Float.toString((round(results[0], 2))));
+        downstairsTextView.setText(Float.toString(round(results[1], 2)));
+        joggingTextView.setText(Float.toString(round(results[2], 2)));
+        sittingTextView.setText(Float.toString(round(results[3], 2)));
+        standingTextView.setText(Float.toString(round(results[4], 2)));
+        upstairsTextView.setText(Float.toString(round(results[5], 2)));
+        walkingTextView.setText(Float.toString(round(results[6], 2)));
     }
 
     // Set current activity in App View
     private void setCurrentActivity(int idx) {
         if (idx == 0)
-            currentActivityTextView.setText("DOWNSTAIRS");
+            currentActivityTextView.setText("BIKING");
         else if (idx == 1)
-            currentActivityTextView.setText("JOGGING");
+            currentActivityTextView.setText("DOWNSTAIRS");
         else if (idx == 2)
-            currentActivityTextView.setText("SITTING");
+            currentActivityTextView.setText("JOGGING");
         else if (idx == 3)
-            currentActivityTextView.setText("STANDING");
+            currentActivityTextView.setText("SITTING");
         else if (idx == 4)
-            currentActivityTextView.setText("UPSTAIRS");
+            currentActivityTextView.setText("STANDING");
         else if (idx == 5)
+            currentActivityTextView.setText("UPSTAIRS");
+        else if (idx == 6)
             currentActivityTextView.setText("WALKING");
         else
             currentActivityTextView.setText("UNDEFINED");
