@@ -2,6 +2,7 @@ package com.example.har_app;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.content.Context;
 import android.hardware.Sensor;
@@ -10,6 +11,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -56,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextView upstairsTextView;
     private TextView walkingTextView;
     private TextView bikingTextView;
-    private TextView currentActivityTextView;
+    private ImageView currentActivityImageView;
 
     private TableRow downstairsTableRow;
     private TableRow joggingTableRow;
@@ -89,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         upstairsTextView = findViewById(R.id.upstairs_prob);
         walkingTextView = findViewById(R.id.walking_prob);
         bikingTextView = findViewById((R.id.biking_prob));
-        currentActivityTextView = findViewById(R.id.current_activity);
+        currentActivityImageView = findViewById(R.id.current_activity_image);
 
         downstairsTableRow = findViewById(R.id.downstairs_row);
         joggingTableRow = findViewById(R.id.jogging_row);
@@ -265,22 +267,34 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     // Set current activity in App View
     private void setCurrentActivity(int idx) {
-        if (idx == 0)
-            currentActivityTextView.setText("BIKING");
-        else if (idx == 1)
-            currentActivityTextView.setText("DOWNSTAIRS");
-        else if (idx == 2)
-            currentActivityTextView.setText("JOGGING");
-        else if (idx == 3)
-            currentActivityTextView.setText("SITTING");
-        else if (idx == 4)
-            currentActivityTextView.setText("STANDING");
-        else if (idx == 5)
-            currentActivityTextView.setText("UPSTAIRS");
-        else if (idx == 6)
-            currentActivityTextView.setText("WALKING");
-        else
-            currentActivityTextView.setText("UNDEFINED");
+        if (idx == 0){
+            Drawable drawable = getDrawable(R.drawable.biking);
+            currentActivityImageView.setImageDrawable(drawable);
+        }
+        else if (idx == 1){
+            Drawable drawable = getDrawable(R.drawable.downstairs);
+            currentActivityImageView.setImageDrawable(drawable);
+        }
+        else if (idx == 2){
+            Drawable drawable = getDrawable(R.drawable.jogging);
+            currentActivityImageView.setImageDrawable(drawable);
+        }
+        else if (idx == 3){
+            Drawable drawable = getDrawable(R.drawable.sitting);
+            currentActivityImageView.setImageDrawable(drawable);
+        }
+        else if (idx == 4){
+            Drawable drawable = getDrawable(R.drawable.standing);
+            currentActivityImageView.setImageDrawable(drawable);
+        }
+        else if (idx == 5){
+            Drawable drawable = getDrawable(R.drawable.upstairs);
+            currentActivityImageView.setImageDrawable(drawable);
+        }
+        else if (idx == 6){
+            Drawable drawable = getDrawable(R.drawable.walking);
+            currentActivityImageView.setImageDrawable(drawable);
+        }
     }
 
     // Looks for null values in float array
