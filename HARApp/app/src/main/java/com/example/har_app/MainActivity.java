@@ -3,6 +3,7 @@ package com.example.har_app;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.content.Context;
 import android.hardware.Sensor;
@@ -11,6 +12,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -60,13 +63,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextView bikingTextView;
     private ImageView currentActivityImageView;
 
+    private TableRow bikingTableRow;
     private TableRow downstairsTableRow;
     private TableRow joggingTableRow;
     private TableRow sittingTableRow;
     private TableRow standingTableRow;
     private TableRow upstairsTableRow;
     private TableRow walkingTableRow;
-    private TableRow bikingTableRow;
+
+    Button button;
+    Boolean buttons_visibility;
+
+    private MediaPlayer mediaPlayer;
 
     private TextToSpeech textToSpeech;
     private float[] results;
@@ -93,13 +101,43 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         bikingTextView = findViewById((R.id.biking_prob));
         currentActivityImageView = findViewById(R.id.current_activity_image);
 
-        downstairsTableRow = findViewById(R.id.downstairs_row);
-        joggingTableRow = findViewById(R.id.jogging_row);
-        sittingTableRow = findViewById(R.id.sitting_row);
-        standingTableRow = findViewById(R.id.standing_row);
-        upstairsTableRow = findViewById(R.id.upstairs_row);
-        walkingTableRow = findViewById(R.id.walking_row);
-        bikingTableRow = findViewById(R.id.biking_row);
+        bikingTableRow = (TableRow) findViewById(R.id.biking_row);
+        downstairsTableRow = (TableRow) findViewById(R.id.downstairs_row);
+        joggingTableRow = (TableRow) findViewById(R.id.jogging_row);
+        sittingTableRow = (TableRow) findViewById(R.id.sitting_row);
+        standingTableRow = (TableRow) findViewById(R.id.standing_row);
+        upstairsTableRow = (TableRow) findViewById(R.id.upstairs_row);
+        walkingTableRow = (TableRow) findViewById(R.id.walking_row);
+
+        buttons_visibility = true;
+
+        button = (Button) findViewById(R.id.button);
+
+        button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                if (buttons_visibility){
+                    bikingTableRow.setVisibility(View.INVISIBLE);
+                    downstairsTableRow.setVisibility(View.INVISIBLE);
+                    joggingTableRow.setVisibility(View.INVISIBLE);
+                    sittingTableRow.setVisibility(View.INVISIBLE);
+                    standingTableRow.setVisibility(View.INVISIBLE);
+                    upstairsTableRow.setVisibility(View.INVISIBLE);
+                    walkingTableRow.setVisibility(View.INVISIBLE);
+                    buttons_visibility = false;
+                } else {
+                    bikingTableRow.setVisibility(View.VISIBLE);
+                    downstairsTableRow.setVisibility(View.VISIBLE);
+                    joggingTableRow.setVisibility(View.VISIBLE);
+                    sittingTableRow.setVisibility(View.VISIBLE);
+                    standingTableRow.setVisibility(View.VISIBLE);
+                    upstairsTableRow.setVisibility(View.VISIBLE);
+                    walkingTableRow.setVisibility(View.VISIBLE);
+                    buttons_visibility = true;
+                }
+            }
+        });
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
@@ -116,6 +154,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         textToSpeech = new TextToSpeech(this, this);
         textToSpeech.setLanguage(Locale.US);
+
+        mediaPlayer = MediaPlayer.create(this, R.raw.rocky);
+
     }
 
     // Initializes the app sensor manager
@@ -133,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             textToSpeech.stop();
             textToSpeech.shutdown();
         }
-        mSensorManager.unregisterListener(this);
+        //mSensorManager.unregisterListener(this);
         super.onDestroy();
     }
 
@@ -141,9 +182,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onInit(int status) {
         Timer timer = new Timer();
+
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
+                Log.i("ON INIT", "ON INIT");
                 if (results == null || results.length == 0) {
                     return;
                 }
@@ -157,10 +200,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
 
                 if(max > 0.50 && idx != prevIdx) {
+                    Log.i("ON INIT", "SPEAKING");
                     textToSpeech.speak(labels[idx], TextToSpeech.QUEUE_ADD, null,
                             Integer.toString(new Random().nextInt()));
-                    setCurrentActivity(idx);
                     prevIdx = idx;
+                    if (mediaPlayer.isPlaying()){
+                        mediaPlayer.stop();
+                        mediaPlayer.reset();
+                        Log.i("ON INIT", "MUSIC");
+                    }
                 }
             }
         }, 1000, 3000);
@@ -169,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // When sensor changes, update the probabilities and get new data
     @Override
     public void onSensorChanged(SensorEvent event) {
-        activityPrediction();
+
 
         Sensor sensor = event.sensor;
         if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
@@ -188,6 +236,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             gz.add(event.values[2]);
 
         }
+        activityPrediction();
     }
 
     // Necessary to exist due to the implemented class
@@ -246,15 +295,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             Log.i("Probabilities: ", Arrays.toString(results));
             setProbabilities();
+            setCurrentActivity(idx);
 
-            if(max > 0.50 && idx != prevIdx) {
-                setCurrentActivity(idx);
-            }
-
-            data.clear();
+            //data.clear();
             ax.clear(); ay.clear(); az.clear();
             lx.clear(); ly.clear(); lz.clear();
             gx.clear(); gy.clear(); gz.clear();
+
+
         }
     }
 
@@ -282,6 +330,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         else if (idx == 2){
             Drawable drawable = getDrawable(R.drawable.jogging);
             currentActivityImageView.setImageDrawable(drawable);
+            mediaPlayer.start();
         }
         else if (idx == 3){
             Drawable drawable = getDrawable(R.drawable.sitting);

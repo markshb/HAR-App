@@ -9,4 +9,5 @@
     <string name="upstairs">Upstairs</string>
     <string name="walking">Walking</string>
     <string name="biking">Biking</string>
+    <string name="button_text">OCULTAR PROBABILIDADES</string>
 </resources>

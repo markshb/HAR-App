@@ -48,6 +48,13 @@
             android:layout_height="193dp"
             />
 
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_text"
+            />
+
 
         <TableRow
             android:id="@+id/downstairs_row"
@@ -196,11 +203,12 @@
                 android:layout_marginLeft="-20dp"/>
 
             <TextView
-                android:id="@+id/biking_prob" 
+                android:id="@+id/biking_prob"
                 android:layout_gravity="center"
                 android:textAlignment="center"
                 android:textSize="18sp" />
         </TableRow>
+
 
 
     </TableLayout>
