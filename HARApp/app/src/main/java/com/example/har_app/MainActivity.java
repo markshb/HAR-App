@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     upstairsTableRow.setVisibility(View.INVISIBLE);
                     walkingTableRow.setVisibility(View.INVISIBLE);
                     buttons_visibility = false;
+                    button.setText("MOSTRAR PROBABILIDADES");
                 } else {
                     bikingTableRow.setVisibility(View.VISIBLE);
                     downstairsTableRow.setVisibility(View.VISIBLE);
@@ -135,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     upstairsTableRow.setVisibility(View.VISIBLE);
                     walkingTableRow.setVisibility(View.VISIBLE);
                     buttons_visibility = true;
+                    button.setText("OCULTAR PROBABILIDADES");
                 }
             }
         });
