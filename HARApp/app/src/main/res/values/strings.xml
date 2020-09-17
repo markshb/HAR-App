@@ -10,4 +10,5 @@
     <string name="walking">Walking</string>
     <string name="biking">Biking</string>
     <string name="button_text">OCULTAR PROBABILIDADES</string>
+    <string name="ok">OK</string>
 </resources>

@@ -1,7 +1,13 @@
 package com.example.har_app;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -21,7 +27,10 @@ import android.widget.TextView;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Timer;
@@ -47,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private static List<Float> ma;
     private static List<Float> ml;
     private static List<Float> mg;
+
+    private List<String> actList;
 
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
@@ -108,6 +119,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         standingTableRow = (TableRow) findViewById(R.id.standing_row);
         upstairsTableRow = (TableRow) findViewById(R.id.upstairs_row);
         walkingTableRow = (TableRow) findViewById(R.id.walking_row);
+
+        actList = new ArrayList<>();
 
         buttons_visibility = true;
 
@@ -201,25 +214,30 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     }
                 }
 
-                if(max > 0.50 && idx != prevIdx) {
+                if(max > 0.75 && idx != prevIdx) {
                     Log.i("ON INIT", "SPEAKING");
+                    if (idx == 3) {
+                        Log.i("ON INIT: SET ACTIVITY", listToString());
+                    }
                     textToSpeech.speak(labels[idx], TextToSpeech.QUEUE_ADD, null,
                             Integer.toString(new Random().nextInt()));
                     prevIdx = idx;
-                    if (mediaPlayer.isPlaying()){
+                   /* if (mediaPlayer.isPlaying()){
                         mediaPlayer.stop();
                         mediaPlayer.reset();
                         Log.i("ON INIT", "MUSIC");
-                    }
+                    }*/
                 }
             }
         }, 1000, 3000);
+
     }
 
     // When sensor changes, update the probabilities and get new data
     @Override
     public void onSensorChanged(SensorEvent event) {
 
+        activityPrediction();
 
         Sensor sensor = event.sensor;
         if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
@@ -238,7 +256,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             gz.add(event.values[2]);
 
         }
-        activityPrediction();
     }
 
     // Necessary to exist due to the implemented class
@@ -296,14 +313,27 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
 
             Log.i("Probabilities: ", Arrays.toString(results));
+            Log.i("MAYOR INDEX ", String.valueOf(idx));
             setProbabilities();
-            setCurrentActivity(idx);
+            if(results[idx] > 0.75 && idx != prevIdx) {
+                setCurrentActivity(idx);
+            }
+/*            if(results[idx] > 0.50 && idx != prevIdx){
+                Log.i("Probabilities: ", "IN");
+                setCurrentActivity(idx);
+                textToSpeech.speak(labels[idx], TextToSpeech.QUEUE_ADD, null,
+                        Integer.toString(new Random().nextInt()));
+                prevIdx = idx;
+            }*/
 
-            //data.clear();
+
+
+
+            data.clear();
             ax.clear(); ay.clear(); az.clear();
             lx.clear(); ly.clear(); lz.clear();
             gx.clear(); gy.clear(); gz.clear();
-
+            ma.clear(); ml.clear(); mg.clear();
 
         }
     }
@@ -321,6 +351,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     // Set current activity in App View
     private void setCurrentActivity(int idx) {
+        actList.add(labels[idx]);
         if (idx == 0){
             Drawable drawable = getDrawable(R.drawable.biking);
             currentActivityImageView.setImageDrawable(drawable);
@@ -332,11 +363,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         else if (idx == 2){
             Drawable drawable = getDrawable(R.drawable.jogging);
             currentActivityImageView.setImageDrawable(drawable);
-            mediaPlayer.start();
+            //mediaPlayer.start();
         }
         else if (idx == 3){
             Drawable drawable = getDrawable(R.drawable.sitting);
             currentActivityImageView.setImageDrawable(drawable);
+            //showModal();
+            Log.i("SET ACTIVITY", listToString());
+            actList.clear();
         }
         else if (idx == 4){
             Drawable drawable = getDrawable(R.drawable.standing);
@@ -350,6 +384,47 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             Drawable drawable = getDrawable(R.drawable.walking);
             currentActivityImageView.setImageDrawable(drawable);
         }
+    }
+
+    private String listToString(){
+        String r = "";
+        for (String s : actList)
+            r = r + s +",";
+        return  r;
+    }
+
+    private void   showModal(){
+// Instanciamos un nuevo AlertDialog Builder y le asociamos titulo y mensaje
+
+        String mssg = listToString();
+        Log.i("MODAL", mssg);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+        alertDialogBuilder.setMessage(mssg).setCancelable(true)
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+
+        AlertDialog title = alertDialogBuilder.create();
+        title.setTitle("Lista de actividades");
+        title.show();
+
+
+        /*// Creamos un nuevo OnClickListener para el boton Cancelar
+        DialogInterface.OnClickListener listenerCancelar = new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                return;
+            }
+        };
+
+        // Asignamos los botones positivo y negativo a sus respectivos listeners
+        alertDialogBuilder.setNegativeButton(R.string.ok, listenerCancelar);
+
+        return alertDialogBuilder.create();*/
     }
 
     // Looks for null values in float array
