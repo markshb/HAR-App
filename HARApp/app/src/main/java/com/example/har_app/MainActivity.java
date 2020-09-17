@@ -201,7 +201,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                Log.i("ON INIT", "ON INIT");
                 if (results == null || results.length == 0) {
                     return;
                 }
@@ -217,16 +216,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 if(max > 0.75 && idx != prevIdx) {
                     Log.i("ON INIT", "SPEAKING");
                     if (idx == 3) {
-                        Log.i("ON INIT: SET ACTIVITY", listToString());
+                        Log.i("BEFORE CLEARING" , "BEFORE CLEARING");
+                        actList.clear();
+                    } else {
+                        actList.add(labels[idx]);
                     }
                     textToSpeech.speak(labels[idx], TextToSpeech.QUEUE_ADD, null,
                             Integer.toString(new Random().nextInt()));
                     prevIdx = idx;
-                   /* if (mediaPlayer.isPlaying()){
-                        mediaPlayer.stop();
-                        mediaPlayer.reset();
-                        Log.i("ON INIT", "MUSIC");
-                    }*/
                 }
             }
         }, 1000, 3000);
@@ -313,7 +310,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
 
             Log.i("Probabilities: ", Arrays.toString(results));
-            Log.i("MAYOR INDEX ", String.valueOf(idx));
             setProbabilities();
             if(results[idx] > 0.75 && idx != prevIdx) {
                 setCurrentActivity(idx);
@@ -351,7 +347,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     // Set current activity in App View
     private void setCurrentActivity(int idx) {
-        actList.add(labels[idx]);
+
+
+        if (mediaPlayer.isPlaying() && idx != 2) {
+            mediaPlayer.pause();
+        }
         if (idx == 0){
             Drawable drawable = getDrawable(R.drawable.biking);
             currentActivityImageView.setImageDrawable(drawable);
@@ -363,14 +363,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         else if (idx == 2){
             Drawable drawable = getDrawable(R.drawable.jogging);
             currentActivityImageView.setImageDrawable(drawable);
-            //mediaPlayer.start();
+            mediaPlayer.start();
         }
         else if (idx == 3){
+            actList.add("Sitting");
             Drawable drawable = getDrawable(R.drawable.sitting);
             currentActivityImageView.setImageDrawable(drawable);
-            //showModal();
-            Log.i("SET ACTIVITY", listToString());
-            actList.clear();
+            Log.i("WAKALA", String.valueOf(listToString()));
+            Log.i("WAKALA", String.valueOf(actList.size()));
+            if (actList.size() > 0 && actList.get(actList.size()-2) != "Sitting")
+                showModal();
         }
         else if (idx == 4){
             Drawable drawable = getDrawable(R.drawable.standing);
@@ -397,7 +399,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 // Instanciamos un nuevo AlertDialog Builder y le asociamos titulo y mensaje
 
         String mssg = listToString();
-        Log.i("MODAL", mssg);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
         alertDialogBuilder.setMessage(mssg).setCancelable(true)
                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
