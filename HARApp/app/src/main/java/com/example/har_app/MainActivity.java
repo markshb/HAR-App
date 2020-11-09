@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -16,11 +17,16 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.SystemClock;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -36,7 +42,7 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener, TextToSpeech.OnInitListener {
+public class MainActivity extends AppCompatActivity implements SensorEventListener, TextToSpeech.OnInitListener, PopupMenu.OnMenuItemClickListener {
 
     private static final int N_SAMPLES = 100;
     private static int prevIdx = -1;
@@ -63,7 +69,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor mAccelerometer;
     private Sensor mGyroscope;
     private Sensor mLinearAcceleration;
+    private Sensor mSteps;
 
+    public static float[] timeArray;
+    public static float t0, tf, el;
+    public static boolean started = false;
+    private int currentActivityID;
+
+    public static  String steps_count = "";
 
     private TextView downstairsTextView;
     private TextView joggingTextView;
@@ -74,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextView bikingTextView;
     private ImageView currentActivityImageView;
 
+
+
     private TableRow bikingTableRow;
     private TableRow downstairsTableRow;
     private TableRow joggingTableRow;
@@ -81,6 +96,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TableRow standingTableRow;
     private TableRow upstairsTableRow;
     private TableRow walkingTableRow;
+
+
 
     Button button;
     Boolean buttons_visibility;
@@ -120,6 +137,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         upstairsTableRow = (TableRow) findViewById(R.id.upstairs_row);
         walkingTableRow = (TableRow) findViewById(R.id.walking_row);
 
+
+
+
         actList = new ArrayList<>();
 
         buttons_visibility = true;
@@ -139,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     upstairsTableRow.setVisibility(View.INVISIBLE);
                     walkingTableRow.setVisibility(View.INVISIBLE);
                     buttons_visibility = false;
-                    button.setText("MOSTRAR PROBABILIDADES");
+                    button.setText("SHOW PROBABILITIES");
                 } else {
                     bikingTableRow.setVisibility(View.VISIBLE);
                     downstairsTableRow.setVisibility(View.VISIBLE);
@@ -149,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     upstairsTableRow.setVisibility(View.VISIBLE);
                     walkingTableRow.setVisibility(View.VISIBLE);
                     buttons_visibility = true;
-                    button.setText("OCULTAR PROBABILIDADES");
+                    button.setText("HIDDEN PROBABILITIES");
                 }
             }
         });
@@ -164,6 +184,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         mSensorManager.registerListener(this, mGyroscope , SensorManager.SENSOR_DELAY_FASTEST);
+
+        mSteps = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        mSensorManager.registerListener(this, mSteps , SensorManager.SENSOR_DELAY_FASTEST);
 
         classifier = new Classifier(getApplicationContext());
 
@@ -180,6 +203,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         getSensorManager().registerListener(this, getSensorManager().getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_FASTEST);
         getSensorManager().registerListener(this, getSensorManager().getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION), SensorManager.SENSOR_DELAY_FASTEST);
         getSensorManager().registerListener(this, getSensorManager().getDefaultSensor(Sensor.TYPE_GYROSCOPE), SensorManager.SENSOR_DELAY_FASTEST);
+        getSensorManager().registerListener(this, getSensorManager().getDefaultSensor(Sensor.TYPE_STEP_COUNTER), SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     // App closed
@@ -198,33 +222,61 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onInit(int status) {
         Timer timer = new Timer();
 
+
+
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if (results == null || results.length == 0) {
-                    return;
-                }
-                float max = -1;
-                int idx = -1;
-                for (int i = 0; i < results.length; i++) {
-                    if (results[i] > max) {
-                        idx = i;
-                        max = results[i];
-                    }
-                }
+                runOnUiThread(new TimerTask() {
+                    @Override
+                    public void run() {
 
-                if(max > 0.75 && idx != prevIdx) {
-                    Log.i("ON INIT", "SPEAKING");
-                    if (idx == 3) {
-                        Log.i("BEFORE CLEARING" , "BEFORE CLEARING");
-                        actList.clear();
-                    } else {
-                        actList.add(labels[idx]);
+                        if (results == null || results.length == 0) {
+                            return;
+                        }
+                        float max = -1;
+                        int idx = -1;
+                        for (int i = 0; i < results.length; i++) {
+                            if (results[i] > max) {
+                                idx = i;
+                                max = results[i];
+                            }
+                        }
+
+                        if (max > 0.75 && idx != prevIdx) {
+                            Log.i("ON INIT", "SPEAKING");
+                            if (idx == 3) {
+                                Log.i("BEFORE CLEARING", "BEFORE CLEARING");
+                                actList.clear();
+                            } else {
+                                actList.add(labels[idx]);
+                            }
+                            currentActivityID = idx;
+                            setCurrentActivity(idx);
+                            textToSpeech.speak(labels[idx], TextToSpeech.QUEUE_ADD, null,
+                                    Integer.toString(new Random().nextInt()));
+                            if (started) {
+                                tf = SystemClock.elapsedRealtime();
+                                //Log.i("T0", String.valueOf(t0));
+                                //Log.i("Tf", String.valueOf(tf));
+                                el = (tf - t0) / 1000.0f;
+                                //Log.i("El", String.valueOf(el));
+                                timeArray[idx] = timeArray[idx] + el;
+                            } else {
+                                timeArray = new float[8];
+                                for (int i = 0; i < 8; ++i) {
+                                    timeArray[i] = 0.0f;
+                                }
+                                t0 = 0.0f;
+                                tf = 0.0f;
+                                el = 0.0f;
+                                started = true;
+                            }
+                            prevIdx = idx;
+                            t0 = SystemClock.elapsedRealtime();
+                        }
                     }
-                    textToSpeech.speak(labels[idx], TextToSpeech.QUEUE_ADD, null,
-                            Integer.toString(new Random().nextInt()));
-                    prevIdx = idx;
-                }
+                });
             }
         }, 1000, 3000);
 
@@ -241,17 +293,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             ax.add(event.values[0]);
             ay.add(event.values[1]);
             az.add(event.values[2]);
-
         } else if (sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
             lx.add(event.values[0]);
             ly.add(event.values[1]);
             lz.add(event.values[2]);
-
         } else if (sensor.getType() == Sensor.TYPE_GYROSCOPE) {
             gx.add(event.values[0]);
             gy.add(event.values[1]);
             gz.add(event.values[2]);
-
+        } else if (sensor.getType() == Sensor.TYPE_STEP_COUNTER){
+            if (currentActivityID == 1 || currentActivityID == 2 || currentActivityID == 5 || currentActivityID == 6){
+                steps_count = String.valueOf(event.values[3]);
+                System.out.println(steps_count);
+            }
         }
     }
 
@@ -309,11 +363,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
             }
 
-            Log.i("Probabilities: ", Arrays.toString(results));
+            //Log.i("Probabilities: ", Arrays.toString(results));
             setProbabilities();
-            if(results[idx] > 0.75 && idx != prevIdx) {
-                setCurrentActivity(idx);
-            }
+            //if(results[idx] > 0.75 && idx != prevIdx) {
+            //   setCurrentActivity(idx);
+            //}
 /*            if(results[idx] > 0.50 && idx != prevIdx){
                 Log.i("Probabilities: ", "IN");
                 setCurrentActivity(idx);
@@ -369,9 +423,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             actList.add("Sitting");
             Drawable drawable = getDrawable(R.drawable.sitting);
             currentActivityImageView.setImageDrawable(drawable);
-            Log.i("WAKALA", String.valueOf(listToString()));
-            Log.i("WAKALA", String.valueOf(actList.size()));
-            if (actList.size() > 0 && actList.get(actList.size()-2) != "Sitting")
+            //Log.i("WAKALA", String.valueOf(listToString()));
+            //Log.i("WAKALA", String.valueOf(actList.size()));
+            if (actList.size() > 1 && actList.get(actList.size()-2) != "Sitting")
                 showModal();
         }
         else if (idx == 4){
@@ -449,5 +503,57 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // Returns sensor manager
     private SensorManager getSensorManager() {
         return (SensorManager) getSystemService(SENSOR_SERVICE);
+    }
+
+    /*
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.actions, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.item1){
+            Intent intent = new Intent(MainActivity.this, Records.class);
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(MainActivity.this, Records.class);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+     */
+
+    public void showMenu(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        // This activity implements OnMenuItemClickListener
+        popup.setOnMenuItemClickListener(this);
+        popup.inflate(R.menu.actions);
+        popup.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.item2){
+            Intent intent = new Intent(MainActivity.this, Records.class);
+            startActivity(intent);
+            return  true;
+        } else if (id == R.id.item3) {
+            Intent intent = new Intent(MainActivity.this, StepCounter.class);
+            startActivity(intent);
+            return  true;
+        } else {
+            return false;
+        }
+
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
     }
 }

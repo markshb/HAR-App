@@ -12,5 +12,11 @@
     <item name="standing_row" type="id"></item>
     <item name="upstairs_row" type="id"></item>
     <item name="walking_row" type="id"></item>
+    <item name="downstairs_time" type="id"></item>
+    <item name="jogging_time" type="id"></item>
+    <item name="sitting_time" type="id"></item>
+    <item name="standing_time" type="id"></item>
+    <item name="upstairs_time" type="id"></item>
+    <item name="walking_time" type="id"></item>
     <item name="current_activity" type="id"></item>
 </resources>

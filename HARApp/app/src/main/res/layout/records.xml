@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ededed"
+        android:padding="0dp"
+        tools:context="io.github.introml.activityrecognition.Records">
+
+
+        <TableRow>
+            <TextView
+                android:id="@+id/current_activity_title"
+                android:layout_height="73dp"
+                android:layout_weight="1"
+                android:text="My records:"
+                android:gravity="center"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:background="@android:color/holo_green_light"/>
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:onClick="showMenu"
+                android:src="@drawable/ic_baseline_menu_24"
+                android:background="@android:color/holo_green_light"/>
+        </TableRow>
+
+
+        <TableRow
+            android:id="@+id/downstairs_row"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/downstairs_title"
+                android:layout_gravity="start"
+                android:text="Downstairs time:"
+                android:textAlignment="textStart"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginLeft="200px"
+                />
+
+            <TextView
+                android:id="@+id/downstairs_time"
+                android:layout_gravity="start"
+                android:textAlignment="textStart"
+                android:textSize="18sp"
+                android:layout_marginLeft="-100px"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/jogging_row"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/jogging_title"
+                android:layout_gravity="start"
+                android:text="Jogging time:"
+                android:textAlignment="textStart"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginLeft="200px"/>
+
+            <TextView
+                android:id="@+id/jogging_time"
+                android:layout_gravity="start"
+                android:textAlignment="textStart"
+                android:textSize="18sp"
+                android:layout_marginLeft="-100px"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/sitting_row"
+            android:layout_width="fill_parent"
+            android:layout_height="41dp"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/sitting_title"
+                android:layout_width="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginLeft="200px"
+                android:text="Sitting time"
+                android:textAlignment="textStart"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/sitting_time"
+                android:layout_gravity="start"
+                android:textAlignment="textStart"
+                android:textSize="18sp"
+                android:layout_marginLeft="-100px"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/standing_row"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/standing_title"
+                android:layout_gravity="start"
+                android:text="Standing time:"
+                android:textAlignment="textStart"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginLeft="200px"/>
+
+            <TextView
+                android:id="@+id/standing_time"
+                android:layout_gravity="start"
+                android:textAlignment="textStart"
+                android:textSize="18sp"
+                android:layout_marginLeft="-100px"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/upstairs_row"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/upstairs_title"
+                android:layout_gravity="start"
+                android:text="Upstairs time:"
+                android:textAlignment="textStart"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginLeft="200px"/>
+
+            <TextView
+                android:id="@+id/upstairs_time"
+                android:layout_gravity="start"
+                android:textAlignment="textStart"
+                android:textSize="18sp"
+                android:layout_marginLeft="-100px"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/walking_row"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/walking_title"
+                android:layout_gravity="start"
+                android:text="Walking time"
+                android:textAlignment="textStart"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginLeft="200px"/>
+
+            <TextView
+                android:id="@+id/walking_time"
+                android:layout_gravity="start"
+                android:textAlignment="textStart"
+                android:textSize="18sp"
+                android:layout_marginLeft="-100px"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/biking_row"
+            android:layout_width="fill_parent"
+            android:layout_height="255dp"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/biking_title"
+                android:layout_gravity="start"
+                android:layout_marginLeft="200px"
+                android:text="Biking time"
+                android:textAlignment="textStart"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/biking_time"
+                android:layout_gravity="start"
+                android:layout_marginLeft="-100px"
+                android:textAlignment="textStart"
+                android:textSize="18sp" />
+        </TableRow>
+
+
+
+    </TableLayout>
+
+
+
+</ScrollView>
